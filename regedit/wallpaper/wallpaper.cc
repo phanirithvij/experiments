@@ -7,6 +7,7 @@
 #include "main.h"
 
 // ref: https://matthewvaneerde.wordpress.com/2012/10/10/changing-the-desktop-wallpaper-using-idesktopwallpaper/
+//  https://github.com/mvaneerde/blog/blob/develop/desktopwallpaper/desktopwallpaper/main.cpp
 
 class CoUninitializeOnExit
 {

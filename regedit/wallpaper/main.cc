@@ -1,7 +1,7 @@
 #include "main.h"
 #include <iostream>
 
-// cl wallpaper.cc test.cc /EHsc
+// cl wallpaper.cc main.cc /EHsc
 
 int main()
 {

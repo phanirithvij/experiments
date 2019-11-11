@@ -1,3 +1,4 @@
+#pragma comment(lib, "Advapi32.lib")
 #include <iostream>
 #include <string>
 #include <exception>
@@ -64,7 +65,7 @@ int main()
 {
     std::wstring regSubKey;
 #ifdef _WIN64 // Manually switching between 32bit/64bit for the example. Use dwFlags instead.
-    regSubKey = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Creative\\S-1-5-21-1131672954-3644571216-278812857-1001\\132177734358952544";
+    regSubKey = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Creative\\S-1-5-21-1131672954-3644571216-278812857-1001\\132178714475080228";
 #else
     regSubKey = L"SOFTWARE\\Company Name\\Application Name\\";
 #endif

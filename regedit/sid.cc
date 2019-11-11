@@ -5,6 +5,7 @@ This gets the current process' user's sid
 // I web archived it https://web.archive.org/web/20160502161610/http://www.codeproject.com/Articles/14828/How-To-Get-Process-Owner-ID-and-Current-User-SID?msg=4038457#xx4038457xx
 cl /EHsc sid.cc /link Advapi32.lib
 */
+#pragma comment(lib, "Advapi32.lib")
 #include <iostream>
 #include <string>
 #include <windows.h>

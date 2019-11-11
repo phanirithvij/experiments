@@ -2,6 +2,7 @@
 Get a key's value from the registry method #2
 cl /EHsc test.cc /link Advapi32.lib
 */
+#pragma comment(lib, "Advapi32.lib")
 #include <windows.h>
 #include <iostream>
 #include <string>
@@ -25,7 +26,7 @@ int main()
     HKEY hKey;
     LONG lRes = RegOpenKeyExA(
         HKEY_LOCAL_MACHINE,
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Creative\\S-1-5-21-1131672954-3644571216-278812857-1001\\132177734358952544",
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Creative\\S-1-5-21-1131672954-3644571216-278812857-1001\\132178714475080228",
         0,
         KEY_READ,
         &hKey);

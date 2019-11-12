@@ -1,4 +1,4 @@
-import 'dart:math';
+// import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -36,15 +36,15 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     _controllers = [
-      PageController(keepPage: true),
-      PageController(keepPage: true),
-      PageController(keepPage: true),
+      PageController(),
+      PageController(),
+      PageController(),
     ];
     _rowController = PageController(
-      // initialPage: 0,
-      // keepPage: true,
-    );
-		currIdxNotifier.value = _rowController.initialPage;
+        // initialPage: 0,
+        // keepPage: true,
+        );
+    currIdxNotifier.value = _rowController.initialPage;
     super.initState();
   }
 
@@ -52,82 +52,84 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
-        pageSnapping: true,
+        // pageSnapping: true,
         controller: _rowController,
         onPageChanged: (pno) {
+					// MUST set state and trigger a rebuild
+					// As horizontal viewport changed
           setState(() {
             currIdxNotifier.value = pno;
-            print("${currIdxNotifier.value} horizz");
+            // print("${currIdxNotifier.value} horizz");
           });
         },
         children: [
           ColPageView(
             idx: 0,
+            currup: currUpNotifier,
             notifier: currIdxNotifier,
             controllers: _controllers,
             children: <Widget>[
               ColoredWidget(
                 color: Colors.orange[50],
-                direction: "0,0",
+                text: "0, 0",
               ),
               ColoredWidget(
                 color: Colors.orange[100],
-                direction: "0,1",
+                text: "0, 1",
               ),
               ColoredWidget(
                 color: Colors.orange[200],
-                direction: "0,2",
+                text: "0, 2",
               ),
               ColoredWidget(
                 color: Colors.orange[300],
-                direction: "0,3",
+                text: "0, 3",
               ),
             ],
-            currup: currUpNotifier,
           ),
           ColPageView(
-            notifier: currIdxNotifier,
             idx: 1,
+            currup: currUpNotifier,
+            notifier: currIdxNotifier,
             controllers: _controllers,
             children: [
               ColoredWidget(
                 color: Colors.green[100],
-                direction: "1,0",
+                text: "1, 0",
               ),
               ColoredWidget(
                 color: Colors.green[200],
-                direction: "1,1",
+                text: "1, 1",
               ),
               ColoredWidget(
                 color: Colors.green[300],
-                direction: "1,2",
+                text: "1, 2",
               ),
             ],
-            currup: currUpNotifier,
           ),
           ColPageView(
-            notifier: currIdxNotifier,
             idx: 2,
+            currup: currUpNotifier,
+            notifier: currIdxNotifier,
             controllers: _controllers,
             children: [
               ColoredWidget(
                 color: Colors.teal[100],
-                direction: "2,0",
+                text: "2, 0",
               ),
               ColoredWidget(
                 color: Colors.teal[200],
-                direction: "2,1",
+                text: "2, 1",
               ),
               ColoredWidget(
                 color: Colors.teal[300],
-                direction: "2,2",
+                text: "2, 2",
               ),
               ColoredWidget(
                 color: Colors.teal[400],
-                direction: "2,3",
+                text: "2, 3",
               ),
             ],
-            currup: currUpNotifier,
           ),
         ],
       ),
@@ -135,6 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+/// All the vertical pageviews are here
 class ColPageView extends StatefulWidget {
   final List<Widget> children;
   final List<PageController> controllers;
@@ -158,63 +161,83 @@ class ColPageView extends StatefulWidget {
 class _ColPageViewState extends State<ColPageView> {
   @override
   void initState() {
-    print("INIT STATE ${widget.idx}");
-    widget.controllers[widget.idx] =
-        PageController(initialPage: widget.currup.value ?? 0);
-    print("INIT STATE ${widget.currup.value}");
+    // Just initialized
+    // Set the start value to be the current vertical value
+    widget.controllers[widget.idx] = PageController(
+      initialPage: widget.currup.value ?? 0,
+      keepPage: true,
+    );
+    // print("INIT STATE ${widget.idx}");
+    // print("INIT STATE ${widget.currup.value}");
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return PageView(
-      pageSnapping: true,
+      // pageSnapping: true,
       controller: widget.controllers[widget.idx],
       //   controller: widget.controller,
       scrollDirection: Axis.vertical,
       children: widget.children,
       onPageChanged: (widget.notifier.value == widget.idx)
           ? (pno) {
-              var rand = Random();
-              var randnn = rand.nextDouble();
+              // if the global horizontal page is the current widget
+              // var rand = Random();
+              // var randnn = rand.nextDouble();
               widget.controllers.forEach((colpv) {
                 if (widget.controllers[widget.idx] == colpv) {
-                  print("same widget so return $randnn");
+                  // print("same widget so return $randnn");
                   return;
                 }
+                // https://github.com/flutter/flutter/issues/20621#issuecomment-445504085
+                // Only if the controller has clients
                 bool isSelected = colpv.hasClients
                     ? colpv.page == pno
                     : colpv.initialPage == pno;
 
+                // Not the same page as everyone
                 if (!isSelected) {
-                  print("not selected");
+                  // print("not selected");
                   if (colpv.hasClients) {
-                    colpv.animateToPage(pno,
-                        duration: Duration(milliseconds: 200),
-                        curve: Curves.easeIn);
+                    colpv.animateToPage(
+                      pno,
+                      duration: Duration(milliseconds: 200),
+                      curve: Curves.easeIn,
+                    );
                   }
                 }
+                // set the current updated value of the vertical coord
                 widget.currup.value = pno;
-                print("$pno $isSelected");
+                // print("$pno $isSelected");
               });
-              print("col-${widget.idx} changed to $pno");
+              // print("col-${widget.idx} changed to $pno");
+
+              // set horizontal coord to be null
+              // As we've finished dealing with it
               widget.notifier.value = null;
             }
           : (_) {
-              print("nope ${widget.notifier.value} == ${widget.idx}");
+              // Others which are not the currently moving pageview
+              // SHOULD not have any listeners
+              // Spent 5hrs trying to figure this out
+              // print("nope ${widget.notifier.value} == ${widget.idx}");
             },
     );
   }
 }
 
+/// A Widget that simply displays a color and an input text
+/// NOTE: This is a StatefulWidget because needs to use keepalive
 class ColoredWidget extends StatefulWidget {
+  /// Color to display the widget in
   final Color color;
-  final String direction;
+  final String text;
 
   const ColoredWidget({
     Key key,
     @required this.color,
-    @required this.direction,
+    @required this.text,
   }) : super(key: key);
 
   @override
@@ -230,7 +253,7 @@ class _ColoredWidgetState extends State<ColoredWidget>
         color: widget.color,
         child: Center(
           child: Text(
-            widget.direction,
+            widget.text,
             style: TextStyle(
               fontSize: 100,
               color: Colors.black,
@@ -239,6 +262,10 @@ class _ColoredWidgetState extends State<ColoredWidget>
         ));
   }
 
+  // Need to use this or the state of the pageview will be lost
+  // In this case if not using keepalive it would still work but
+  // It will scroll down everytime the page gets changed horizontally
+  // TODO: Destroy if not next to current pageview
   @override
   bool get wantKeepAlive => true;
 }

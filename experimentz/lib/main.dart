@@ -28,27 +28,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<PageControllerC> _controllers;
+  List<PageController> _controllers;
   PageController _rowController;
   ValueNotifier<int> currIdxNotifier = ValueNotifier(0);
+  ValueNotifier<int> currUpNotifier = ValueNotifier(0);
 
   @override
   void initState() {
     _controllers = [
-      PageControllerC(
-        controller: PageController(keepPage: true),
-        recorded: 0,
-      ),
-      PageControllerC(
-        controller: PageController(keepPage: true),
-        recorded: 1,
-      ),
-      PageControllerC(
-        controller: PageController(keepPage: true),
-        recorded: 2,
-      ),
+      PageController(keepPage: true),
+      PageController(keepPage: true),
+      PageController(keepPage: true),
     ];
-    _rowController = PageController();
+    _rowController = PageController(
+      // initialPage: 0,
+      // keepPage: true,
+    );
+		currIdxNotifier.value = _rowController.initialPage;
     super.initState();
   }
 
@@ -56,6 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
+        pageSnapping: true,
         controller: _rowController,
         onPageChanged: (pno) {
           setState(() {
@@ -86,6 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 direction: "0,3",
               ),
             ],
+            currup: currUpNotifier,
           ),
           ColPageView(
             notifier: currIdxNotifier,
@@ -105,6 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 direction: "1,2",
               ),
             ],
+            currup: currUpNotifier,
           ),
           ColPageView(
             notifier: currIdxNotifier,
@@ -128,6 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 direction: "2,3",
               ),
             ],
+            currup: currUpNotifier,
           ),
         ],
       ),
@@ -135,25 +135,18 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class PageControllerC {
-  PageController controller;
-  int recorded;
-  PageControllerC({
-    this.recorded,
-    this.controller,
-  });
-}
-
 class ColPageView extends StatefulWidget {
   final List<Widget> children;
-  final List<PageControllerC> controllers;
+  final List<PageController> controllers;
   final ValueNotifier<int> notifier;
+  final ValueNotifier<int> currup;
   final int idx;
 
   const ColPageView({
     Key key,
     this.children = const <Widget>[],
     @required this.idx,
+    @required this.currup,
     @required this.notifier,
     @required this.controllers,
   }) : super(key: key);
@@ -164,9 +157,19 @@ class ColPageView extends StatefulWidget {
 
 class _ColPageViewState extends State<ColPageView> {
   @override
+  void initState() {
+    print("INIT STATE ${widget.idx}");
+    widget.controllers[widget.idx] =
+        PageController(initialPage: widget.currup.value ?? 0);
+    print("INIT STATE ${widget.currup.value}");
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PageView(
-      controller: widget.controllers[widget.idx].controller,
+      pageSnapping: true,
+      controller: widget.controllers[widget.idx],
       //   controller: widget.controller,
       scrollDirection: Axis.vertical,
       children: widget.children,
@@ -179,24 +182,27 @@ class _ColPageViewState extends State<ColPageView> {
                   print("same widget so return $randnn");
                   return;
                 }
-                bool isSelected = colpv.controller.hasClients
-                    ? colpv.controller.page == pno
-                    : colpv.controller.initialPage == pno;
+                bool isSelected = colpv.hasClients
+                    ? colpv.page == pno
+                    : colpv.initialPage == pno;
 
                 if (!isSelected) {
                   print("not selected");
-                  if (colpv.controller.hasClients) {
-                    colpv.controller.animateToPage(pno,
+                  if (colpv.hasClients) {
+                    colpv.animateToPage(pno,
                         duration: Duration(milliseconds: 200),
                         curve: Curves.easeIn);
                   }
                 }
+                widget.currup.value = pno;
                 print("$pno $isSelected");
               });
               print("col-${widget.idx} changed to $pno");
               widget.notifier.value = null;
             }
-          : null,
+          : (_) {
+              print("nope ${widget.notifier.value} == ${widget.idx}");
+            },
     );
   }
 }

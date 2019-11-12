@@ -1,98 +1,133 @@
-import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
-
-import 'package:bloc/bloc.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
-class SimpleBlocDelegate extends BlocDelegate {
-  @override
-  void onEvent(Bloc bloc, Object event) {
-    super.onEvent(bloc, event);
-    print(event);
-  }
-
-  @override
-  void onTransition(Bloc bloc, Transition transition) {
-    super.onTransition(bloc, transition);
-    print(transition);
-  }
-
-  @override
-  void onError(Bloc bloc, Object error, StackTrace stacktrace) {
-    super.onError(bloc, error, stacktrace);
-    print(error);
-  }
-}
+import 'package:flutter/services.dart';
 
 void main() {
-  BlocSupervisor.delegate = SimpleBlocDelegate();
-  runApp(App());
+  SystemChrome.setEnabledSystemUIOverlays([]);
+  runApp(MyApp());
 }
 
-class App extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ThemeBloc>(
-      builder: (context) => ThemeBloc(),
-      child: BlocBuilder<ThemeBloc, ThemeData>(
-        builder: (context, theme) {
-          return MaterialApp(
-            title: 'Bloc Demo',
-            home: BlocProvider(
-              builder: (context) => CounterBloc(),
-              child: CounterPage(),
-            ),
-            theme: theme,
-          );
-        },
-      ),
+    return MaterialApp(
+      title: 'Flutter Experiments',
+      theme: ThemeData.dark(),
+      home: MyHomePage(title: 'FlutterExps'),
     );
   }
 }
 
-class CounterPage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
+  MyHomePage({Key key, this.title}) : super(key: key);
+  final String title;
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  List<PageControllerC> _controllers;
+  PageController _rowController;
+  ValueNotifier<int> currIdxNotifier = ValueNotifier(0);
+
+  @override
+  void initState() {
+    _controllers = [
+      PageControllerC(
+        controller: PageController(keepPage: true),
+        recorded: 0,
+      ),
+      PageControllerC(
+        controller: PageController(keepPage: true),
+        recorded: 1,
+      ),
+      PageControllerC(
+        controller: PageController(keepPage: true),
+        recorded: 2,
+      ),
+    ];
+    _rowController = PageController();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Counter')),
-      body: BlocBuilder<CounterBloc, int>(
-        builder: (context, count) {
-          return Center(
-            child: Text(
-              '$count',
-              style: TextStyle(fontSize: 24.0),
-            ),
-          );
+      body: PageView(
+        controller: _rowController,
+        onPageChanged: (pno) {
+          setState(() {
+            currIdxNotifier.value = pno;
+            print("${currIdxNotifier.value} horizz");
+          });
         },
-      ),
-      floatingActionButton: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 5.0),
-            child: FloatingActionButton(
-              child: Icon(Icons.add),
-              onPressed: () => BlocProvider.of<CounterBloc>(context)
-                  .add(CounterEvent.increment),
-            ),
+        children: [
+          ColPageView(
+            idx: 0,
+            notifier: currIdxNotifier,
+            controllers: _controllers,
+            children: <Widget>[
+              ColoredWidget(
+                color: Colors.orange[50],
+                direction: "0,0",
+              ),
+              ColoredWidget(
+                color: Colors.orange[100],
+                direction: "0,1",
+              ),
+              ColoredWidget(
+                color: Colors.orange[200],
+                direction: "0,2",
+              ),
+              ColoredWidget(
+                color: Colors.orange[300],
+                direction: "0,3",
+              ),
+            ],
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 5.0),
-            child: FloatingActionButton(
-              child: Icon(Icons.remove),
-              onPressed: () => BlocProvider.of<CounterBloc>(context)
-                  .add(CounterEvent.decrement),
-            ),
+          ColPageView(
+            notifier: currIdxNotifier,
+            idx: 1,
+            controllers: _controllers,
+            children: [
+              ColoredWidget(
+                color: Colors.green[100],
+                direction: "1,0",
+              ),
+              ColoredWidget(
+                color: Colors.green[200],
+                direction: "1,1",
+              ),
+              ColoredWidget(
+                color: Colors.green[300],
+                direction: "1,2",
+              ),
+            ],
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 5.0),
-            child: FloatingActionButton(
-              child: Icon(Icons.wb_sunny),
-              onPressed: () =>
-                  BlocProvider.of<ThemeBloc>(context).add(ThemeEvent.toggle),
-            ),
+          ColPageView(
+            notifier: currIdxNotifier,
+            idx: 2,
+            controllers: _controllers,
+            children: [
+              ColoredWidget(
+                color: Colors.teal[100],
+                direction: "2,0",
+              ),
+              ColoredWidget(
+                color: Colors.teal[200],
+                direction: "2,1",
+              ),
+              ColoredWidget(
+                color: Colors.teal[300],
+                direction: "2,2",
+              ),
+              ColoredWidget(
+                color: Colors.teal[400],
+                direction: "2,3",
+              ),
+            ],
           ),
         ],
       ),
@@ -100,49 +135,104 @@ class CounterPage extends StatelessWidget {
   }
 }
 
-enum CounterEvent { increment, decrement }
+class PageControllerC {
+  PageController controller;
+  int recorded;
+  PageControllerC({
+    this.recorded,
+    this.controller,
+  });
+}
 
-class CounterBloc extends Bloc<CounterEvent, int> {
-  @override
-  int get initialState => 0;
+class ColPageView extends StatefulWidget {
+  final List<Widget> children;
+  final List<PageControllerC> controllers;
+  final ValueNotifier<int> notifier;
+  final int idx;
+
+  const ColPageView({
+    Key key,
+    this.children = const <Widget>[],
+    @required this.idx,
+    @required this.notifier,
+    @required this.controllers,
+  }) : super(key: key);
 
   @override
-  Stream<int> mapEventToState(CounterEvent event) async* {
-    switch (event) {
-      case CounterEvent.decrement:
-        yield state - 1;
-        break;
-      case CounterEvent.increment:
-        yield state + 1;
-        break;
-    }
+  _ColPageViewState createState() => _ColPageViewState();
+}
+
+class _ColPageViewState extends State<ColPageView> {
+  @override
+  Widget build(BuildContext context) {
+    return PageView(
+      controller: widget.controllers[widget.idx].controller,
+      //   controller: widget.controller,
+      scrollDirection: Axis.vertical,
+      children: widget.children,
+      onPageChanged: (widget.notifier.value == widget.idx)
+          ? (pno) {
+              var rand = Random();
+              var randnn = rand.nextDouble();
+              widget.controllers.forEach((colpv) {
+                if (widget.controllers[widget.idx] == colpv) {
+                  print("same widget so return $randnn");
+                  return;
+                }
+                bool isSelected = colpv.controller.hasClients
+                    ? colpv.controller.page == pno
+                    : colpv.controller.initialPage == pno;
+
+                if (!isSelected) {
+                  print("not selected");
+                  if (colpv.controller.hasClients) {
+                    colpv.controller.animateToPage(pno,
+                        duration: Duration(milliseconds: 200),
+                        curve: Curves.easeIn);
+                  }
+                }
+                print("$pno $isSelected");
+              });
+              print("col-${widget.idx} changed to $pno");
+              widget.notifier.value = null;
+            }
+          : null,
+    );
   }
 }
 
-enum ThemeEvent { toggle }
+class ColoredWidget extends StatefulWidget {
+  final Color color;
+  final String direction;
 
-class ThemeBloc extends Bloc<ThemeEvent, ThemeData> {
-  @override
-  ThemeData get initialState => ThemeData(
-        brightness: Brightness.dark,
-        accentColor: Colors.yellow,
-      );
+  const ColoredWidget({
+    Key key,
+    @required this.color,
+    @required this.direction,
+  }) : super(key: key);
 
   @override
-  Stream<ThemeData> mapEventToState(ThemeEvent event) async* {
-    switch (event) {
-      case ThemeEvent.toggle:
-        yield state ==
-                ThemeData(
-                  brightness: Brightness.dark,
-                  accentColor: Colors.yellow,
-                )
-            ? ThemeData.light()
-            : ThemeData(
-                brightness: Brightness.dark,
-                accentColor: Colors.yellow,
-              );
-        break;
-    }
+  _ColoredWidgetState createState() => _ColoredWidgetState();
+}
+
+class _ColoredWidgetState extends State<ColoredWidget>
+    with AutomaticKeepAliveClientMixin<ColoredWidget> {
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return Container(
+        color: widget.color,
+        child: Center(
+          child: Text(
+            widget.direction,
+            style: TextStyle(
+              fontSize: 100,
+              color: Colors.black,
+            ),
+          ),
+        ));
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

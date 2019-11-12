@@ -10,7 +10,6 @@ dependencies:
     sdk: flutter
 
   flutter_bloc: ^2.0.0
-  provider: ^3.1.0+1
   cupertino_icons: ^0.1.2
 
 dev_dependencies:

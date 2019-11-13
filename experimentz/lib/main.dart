@@ -45,6 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _rowController = PageController(
         // initialPage: 0,
         // keepPage: true,
+				// viewportFraction: 1/3
         );
     currIdxNotifier.value = _rowController.initialPage;
     super.initState();
@@ -57,8 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
         // pageSnapping: true,
         controller: _rowController,
         onPageChanged: (pno) {
-					// MUST set state and trigger a rebuild
-					// As horizontal viewport changed
+          // MUST set state and trigger a rebuild
+          // As horizontal viewport changed
           setState(() {
             currIdxNotifier.value = pno;
             // print("${currIdxNotifier.value} horizz");
@@ -160,6 +161,22 @@ class ColPageView extends StatefulWidget {
     @required this.controllers,
   }) : super(key: key);
 
+  static _ColPageViewState of(BuildContext context) {
+    final _ColPageViewState navigator =
+        context.ancestorStateOfType(const TypeMatcher<_ColPageViewState>());
+
+    assert(() {
+      if (navigator == null) {
+        throw new FlutterError(
+            '_ColPageViewState operation requested with a context that does '
+            'not include a MyStatefulWidget.');
+      }
+      return true;
+    }());
+
+    return navigator;
+  }
+
   @override
   _ColPageViewState createState() => _ColPageViewState();
 }
@@ -172,6 +189,7 @@ class _ColPageViewState extends State<ColPageView> {
     widget.controllers[widget.idx] = PageController(
       initialPage: widget.currup.value ?? 0,
       keepPage: true,
+			// viewportFraction: 1/4
     );
     // print("INIT STATE ${widget.idx}");
     // print("INIT STATE ${widget.currup.value}");
@@ -261,7 +279,7 @@ class _ColoredWidgetState extends State<ColoredWidget>
           child: Text(
             widget.text,
             style: TextStyle(
-              fontSize: 100,
+              fontSize: 60,
               color: Colors.black,
             ),
           ),
@@ -273,5 +291,17 @@ class _ColoredWidgetState extends State<ColoredWidget>
   // it will scroll down every time the page gets changed horizontally
   // TODO: Destroy if not next to current pageview
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive {
+    // var parent = ColPageView.of(context);
+    // curr viewport is parent.notifier.value, parent.currup.value
+    // this widget is in parent.idx
+    // if (parent != null) {
+		// 	var widget = parent.widget;
+    //   if ((widget.notifier.value - widget.idx).abs() < 3) {
+    //     return true;
+    //   }
+    //   return false;
+    // }
+		return true;
+  }
 }

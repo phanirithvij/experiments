@@ -34,11 +34,11 @@ class _MyHomePageState extends State<MyHomePage> {
   // But I need pass by reference thus using it as a wrapper
   ValueNotifier<int> currIdxNotifier = ValueNotifier(0);
   ValueNotifier<int> currUpNotifier = ValueNotifier(0);
-	// double x;
+  // double x;
 
   @override
   void initState() {
-		// x =  MediaQuery.of(context).size.width/4;
+    // x =  MediaQuery.of(context).size.width/4;
     _controllers = [
       PageController(),
       PageController(),
@@ -76,6 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
       duration: Duration(milliseconds: 200),
     );
   }
+
   void _moveDown() {
     var _curr = _controllers[currIdxNotifier.value];
     _curr.nextPage(
@@ -88,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(left: 80),
+        padding: const EdgeInsets.only(left: 85),
         child: Row(
           children: <Widget>[
             // Expanded(flex: 1, child: Container()),
@@ -96,10 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
               tooltip: "Up",
               child: IconButton(
                 icon: Icon(Icons.keyboard_arrow_up),
-                onPressed: () {
-                  print('up');
-                  _moveUp();
-                },
+                onPressed: _moveUp,
               ),
               onPressed: null,
             ),
@@ -107,10 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
               tooltip: "Down",
               child: IconButton(
                 icon: Icon(Icons.keyboard_arrow_down),
-                onPressed: () {
-                  print('down');
-                  _moveDown();
-                },
+                onPressed: _moveDown,
               ),
               onPressed: null,
             ),
@@ -118,10 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
               tooltip: "Prev",
               child: IconButton(
                 icon: Icon(Icons.navigate_before),
-                onPressed: () {
-                  print('prev');
-                  _movePrev();
-                },
+                onPressed: _movePrev,
               ),
               onPressed: null,
             ),
@@ -129,10 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
               tooltip: "Next",
               child: IconButton(
                 icon: Icon(Icons.navigate_next),
-                onPressed: () {
-                  print('next');
-                  _moveNext();
-                },
+                onPressed: _moveNext,
               ),
               onPressed: null,
             ),

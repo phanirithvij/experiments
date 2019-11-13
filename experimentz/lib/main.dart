@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Experiments',
-      theme: ThemeData.dark(),
+      theme: ThemeData.light(),
       home: MyHomePage(title: 'FlutterExps'),
     );
   }
@@ -34,9 +34,11 @@ class _MyHomePageState extends State<MyHomePage> {
   // But I need pass by reference thus using it as a wrapper
   ValueNotifier<int> currIdxNotifier = ValueNotifier(0);
   ValueNotifier<int> currUpNotifier = ValueNotifier(0);
+	// double x;
 
   @override
   void initState() {
+		// x =  MediaQuery.of(context).size.width/4;
     _controllers = [
       PageController(),
       PageController(),
@@ -45,15 +47,98 @@ class _MyHomePageState extends State<MyHomePage> {
     _rowController = PageController(
         // initialPage: 0,
         // keepPage: true,
-				// viewportFraction: 1/3
+        // viewportFraction: 1/3
         );
     currIdxNotifier.value = _rowController.initialPage;
     super.initState();
   }
 
+  void _moveNext() {
+    // var curr = _controllers[currIdxNotifier.value];
+    _rowController.nextPage(
+      curve: Curves.decelerate,
+      duration: Duration(milliseconds: 200),
+    );
+  }
+
+  void _movePrev() {
+    // var curr = _controllers[currIdxNotifier.value];
+    _rowController.previousPage(
+      curve: Curves.decelerate,
+      duration: Duration(milliseconds: 200),
+    );
+  }
+
+  void _moveUp() {
+    var _curr = _controllers[currIdxNotifier.value];
+    _curr.previousPage(
+      curve: Curves.decelerate,
+      duration: Duration(milliseconds: 200),
+    );
+  }
+  void _moveDown() {
+    var _curr = _controllers[currIdxNotifier.value];
+    _curr.nextPage(
+      curve: Curves.decelerate,
+      duration: Duration(milliseconds: 200),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(left: 80),
+        child: Row(
+          children: <Widget>[
+            // Expanded(flex: 1, child: Container()),
+            FloatingActionButton(
+              tooltip: "Up",
+              child: IconButton(
+                icon: Icon(Icons.keyboard_arrow_up),
+                onPressed: () {
+                  print('up');
+                  _moveUp();
+                },
+              ),
+              onPressed: null,
+            ),
+            FloatingActionButton(
+              tooltip: "Down",
+              child: IconButton(
+                icon: Icon(Icons.keyboard_arrow_down),
+                onPressed: () {
+                  print('down');
+                  _moveDown();
+                },
+              ),
+              onPressed: null,
+            ),
+            FloatingActionButton(
+              tooltip: "Prev",
+              child: IconButton(
+                icon: Icon(Icons.navigate_before),
+                onPressed: () {
+                  print('prev');
+                  _movePrev();
+                },
+              ),
+              onPressed: null,
+            ),
+            FloatingActionButton(
+              tooltip: "Next",
+              child: IconButton(
+                icon: Icon(Icons.navigate_next),
+                onPressed: () {
+                  print('next');
+                  _moveNext();
+                },
+              ),
+              onPressed: null,
+            ),
+          ],
+        ),
+      ),
       body: PageView(
         // pageSnapping: true,
         controller: _rowController,
@@ -74,19 +159,19 @@ class _MyHomePageState extends State<MyHomePage> {
             children: <Widget>[
               ColoredWidget(
                 color: Colors.orange[50],
-                text: "0, 0",
+                text: "0 , 0",
               ),
               ColoredWidget(
                 color: Colors.orange[100],
-                text: "0, 1",
+                text: "0 , 1",
               ),
               ColoredWidget(
                 color: Colors.orange[200],
-                text: "0, 2",
+                text: "0 , 2",
               ),
               ColoredWidget(
                 color: Colors.orange[300],
-                text: "0, 3",
+                text: "0 , 3",
               ),
             ],
           ),
@@ -98,19 +183,19 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               ColoredWidget(
                 color: Colors.green[100],
-                text: "1, 0",
+                text: "1 , 0",
               ),
               ColoredWidget(
                 color: Colors.green[200],
-                text: "1, 1",
+                text: "1 , 1",
               ),
               ColoredWidget(
                 color: Colors.green[300],
-                text: "1, 2",
+                text: "1 , 2",
               ),
               ColoredWidget(
                 color: Colors.green[400],
-                text: "1, 3",
+                text: "1 , 3",
               ),
             ],
           ),
@@ -122,19 +207,19 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               ColoredWidget(
                 color: Colors.teal[100],
-                text: "2, 0",
+                text: "2 , 0",
               ),
               ColoredWidget(
                 color: Colors.teal[200],
-                text: "2, 1",
+                text: "2 , 1",
               ),
               ColoredWidget(
                 color: Colors.teal[300],
-                text: "2, 2",
+                text: "2 , 2",
               ),
               ColoredWidget(
                 color: Colors.teal[400],
-                text: "2, 3",
+                text: "2 , 3",
               ),
             ],
           ),
@@ -189,7 +274,7 @@ class _ColPageViewState extends State<ColPageView> {
     widget.controllers[widget.idx] = PageController(
       initialPage: widget.currup.value ?? 0,
       keepPage: true,
-			// viewportFraction: 1/4
+      // viewportFraction: 1/4
     );
     // print("INIT STATE ${widget.idx}");
     // print("INIT STATE ${widget.currup.value}");
@@ -239,7 +324,7 @@ class _ColPageViewState extends State<ColPageView> {
 
               // set horizontal coord to be null
               // As we've finished dealing with it
-              widget.notifier.value = null;
+              // widget.notifier.value = null;
             }
           : (_) {
               // Others which are not the currently moving pageview
@@ -296,12 +381,12 @@ class _ColoredWidgetState extends State<ColoredWidget>
     // curr viewport is parent.notifier.value, parent.currup.value
     // this widget is in parent.idx
     // if (parent != null) {
-		// 	var widget = parent.widget;
+    // 	var widget = parent.widget;
     //   if ((widget.notifier.value - widget.idx).abs() < 3) {
     //     return true;
     //   }
     //   return false;
     // }
-		return true;
+    return true;
   }
 }

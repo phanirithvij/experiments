@@ -57,8 +57,8 @@ class _MyHomePageState extends State<MyHomePage> {
         // pageSnapping: true,
         controller: _rowController,
         onPageChanged: (pno) {
-          // MUST set state and trigger a rebuild
-          // As horizontal viewport changed
+					// MUST set state and trigger a rebuild
+					// As horizontal viewport changed
           setState(() {
             currIdxNotifier.value = pno;
             // print("${currIdxNotifier.value} horizz");
@@ -98,6 +98,18 @@ class _MyHomePageState extends State<MyHomePage> {
               ColoredWidget(
                 color: Colors.green[100],
                 text: "1, 0",
+              ),
+              ColoredWidget(
+                color: Colors.green[200],
+                text: "1, 1",
+              ),
+              ColoredWidget(
+                color: Colors.green[300],
+                text: "1, 2",
+              ),
+              ColoredWidget(
+                color: Colors.green[400],
+                text: "1, 3",
               ),
             ],
           ),
@@ -257,8 +269,8 @@ class _ColoredWidgetState extends State<ColoredWidget>
   }
 
   // Need to use this or the state of the pageview will be lost
-  // In this case if not using keepalive it would still work but
-  // It will scroll down everytime the page gets changed horizontally
+  // In this case, if not using keepalive it would still work but
+  // it will scroll down every time the page gets changed horizontally
   // TODO: Destroy if not next to current pageview
   @override
   bool get wantKeepAlive => true;

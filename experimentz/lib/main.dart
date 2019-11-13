@@ -30,6 +30,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   List<PageController> _controllers;
   PageController _rowController;
+  // No need to use valuenotifiers here
+  // But I need pass by reference thus using it as a wrapper
   ValueNotifier<int> currIdxNotifier = ValueNotifier(0);
   ValueNotifier<int> currUpNotifier = ValueNotifier(0);
 
@@ -55,8 +57,8 @@ class _MyHomePageState extends State<MyHomePage> {
         // pageSnapping: true,
         controller: _rowController,
         onPageChanged: (pno) {
-					// MUST set state and trigger a rebuild
-					// As horizontal viewport changed
+          // MUST set state and trigger a rebuild
+          // As horizontal viewport changed
           setState(() {
             currIdxNotifier.value = pno;
             // print("${currIdxNotifier.value} horizz");
@@ -96,14 +98,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ColoredWidget(
                 color: Colors.green[100],
                 text: "1, 0",
-              ),
-              ColoredWidget(
-                color: Colors.green[200],
-                text: "1, 1",
-              ),
-              ColoredWidget(
-                color: Colors.green[300],
-                text: "1, 2",
               ),
             ],
           ),

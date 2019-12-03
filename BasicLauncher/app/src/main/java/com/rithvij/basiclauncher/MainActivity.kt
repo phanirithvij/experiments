@@ -27,27 +27,35 @@ class MainActivity : AppCompatActivity() {
         mygestureDetector = GestureDetector(this@MainActivity, MyGestureDetector())
 
 
-        Log.d(tag, wallpaperManager.wallpaperInfo.settingsActivity)
-        Log.d(tag, wallpaperManager.wallpaperInfo.packageName)
+        if (wallpaperManager.wallpaperInfo != null){
+            // If it is a livewallpaper
+            Log.d(tag, wallpaperManager.wallpaperInfo.settingsActivity)
+            Log.d(tag, wallpaperManager.wallpaperInfo.packageName)
 
-        // clayout is the global constraint layout
-        // It should be clickable. I did it in the xml
-        val touchListener = View.OnTouchListener { _, event ->
-            mygestureDetector.onTouchEvent(event)
-        }
-        clayout.setOnTouchListener(touchListener)
+            // clayout is the global constraint layout
+            // It should be clickable. I did it in the xml
+            val touchListener = View.OnTouchListener { _, event ->
+                mygestureDetector.onTouchEvent(event)
+            }
+            clayout.setOnTouchListener(touchListener)
 
-        button2.setOnClickListener {
-            // To open current live wallpaper's activity
-            // I answered this question on SO
-            // https://stackoverflow.com/a/59156060/8608146
-            val intent = Intent()
-                .setClassName(
-                    wallpaperManager.wallpaperInfo.packageName,
-                    wallpaperManager.wallpaperInfo.settingsActivity
-                )
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
+            button2.setOnClickListener {
+                // To open current live wallpaper's activity
+                // I answered this question on SO
+                // https://stackoverflow.com/a/59156060/8608146
+                val intent = Intent()
+                    .setClassName(
+                        wallpaperManager.wallpaperInfo.packageName,
+                        wallpaperManager.wallpaperInfo.settingsActivity
+                    )
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+            }
+        } else {
+            // remove button
+            // (button2.parent as ViewGroup).removeView(button2)
+            // or rename it
+            button2.text = "Use a LiveWallpaper like Muzei to see how this works"
         }
     }
 

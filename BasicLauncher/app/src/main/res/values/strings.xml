@@ -2,4 +2,5 @@
     <string name="app_name">BasicLauncher</string>
     <string name="meh">meh</string>
     <string name="start_livewallpaper_activity">Start LiveWallpaper activity</string>
+    <string name="no_livewallpaper">Use a LiveWallpaper like Muzei to see how this works</string>
 </resources>

@@ -26,14 +26,28 @@ class MainActivity : AppCompatActivity() {
         // Create a gesture detector instance
         mygestureDetector = GestureDetector(this@MainActivity, MyGestureDetector())
 
+        updateUI()
+    }
 
-        if (wallpaperManager.wallpaperInfo != null){
+    override fun onResume() {
+        super.onResume()
+        updateUI()
+    }
+
+    private fun updateUI() {
+        Log.d(tag, "UPDATING UI")
+        // remove any listeners
+        clayout.setOnTouchListener(null)
+        button2.setOnClickListener(null)
+        if (wallpaperManager.wallpaperInfo != null) {
             // If it is a livewallpaper
             Log.d(tag, wallpaperManager.wallpaperInfo.settingsActivity)
             Log.d(tag, wallpaperManager.wallpaperInfo.packageName)
 
             // clayout is the global constraint layout
-            // It should be clickable. I did it in the xml
+            // It should be clickable.
+            clayout.isClickable = true
+            clayout.isFocusable = true
             val touchListener = View.OnTouchListener { _, event ->
                 mygestureDetector.onTouchEvent(event)
             }
@@ -51,12 +65,15 @@ class MainActivity : AppCompatActivity() {
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
             }
+            button2.text = resources.getString(R.string.start_livewallpaper_activity)
+
         } else {
             // remove button
             // (button2.parent as ViewGroup).removeView(button2)
             // or rename it
-            button2.text = "Use a LiveWallpaper like Muzei to see how this works"
+            button2.text = resources.getString(R.string.no_livewallpaper)
         }
+
     }
 
     inner class MyGestureDetector : GestureDetector.SimpleOnGestureListener() {

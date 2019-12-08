@@ -1,7 +1,9 @@
 package com.rithvij.basiclauncher
 
+import android.app.PendingIntent
 import android.app.WallpaperManager
-import android.content.Intent
+import android.content.*
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.GestureDetector
@@ -16,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     private val tag = "MainActivity"
     private lateinit var wallpaperManager: WallpaperManager
     private lateinit var mygestureDetector: GestureDetector
+    private lateinit var componentReceiver: ComponentReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,13 +28,22 @@ class MainActivity : AppCompatActivity() {
         wallpaperManager = WallpaperManager.getInstance(applicationContext)
         // Create a gesture detector instance
         mygestureDetector = GestureDetector(this@MainActivity, MyGestureDetector())
+        componentReceiver = ComponentReceiver()
 
         updateUI()
     }
 
     override fun onResume() {
         super.onResume()
+        val filter = IntentFilter()
+        registerReceiver(componentReceiver, filter)
         updateUI()
+    }
+
+    // https://stackoverflow.com/a/18254831/8608146
+    override fun onPause() {
+        super.onPause()
+        unregisterReceiver(componentReceiver)
     }
 
     private fun updateUI() {
@@ -39,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         // remove any listeners
         clayout.setOnTouchListener(null)
         button2.setOnClickListener(null)
+        button.setOnClickListener(null)
         if (wallpaperManager.wallpaperInfo != null) {
             // If it is a livewallpaper
             Log.d(tag, wallpaperManager.wallpaperInfo.settingsActivity)
@@ -66,7 +79,6 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
             button2.text = resources.getString(R.string.start_livewallpaper_activity)
-
         } else {
             // remove button
             // (button2.parent as ViewGroup).removeView(button2)
@@ -74,6 +86,55 @@ class MainActivity : AppCompatActivity() {
             button2.text = resources.getString(R.string.no_livewallpaper)
         }
 
+        button.setOnClickListener {
+            val intent = Intent(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER)
+            startActivity(intent)
+        }
+
+        wallpaper_btn.setOnClickListener {
+            // https://stackoverflow.com/a/34314156/8608146
+            val intent = Intent(Intent.ACTION_SET_WALLPAPER)
+
+            // https://stackoverflow.com/a/18068122/8608146 this link is useful
+            val providers = packageManager.queryIntentActivities(intent, 0)
+            providers.forEach {
+                Log.d(tag, it.activityInfo.packageName)
+            }
+
+            // https://stackoverflow.com/a/19159291/8608146
+            val receiver = Intent(this, ComponentReceiver::class.java)
+            val pendingIntent =
+                PendingIntent.getBroadcast(this, 0, receiver, PendingIntent.FLAG_UPDATE_CURRENT)
+            // Create a chooser to prevent the user from checking don't ask again option
+            val chooser = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                Intent.createChooser(
+                    intent,
+                    resources.getString(R.string.set_wallpaper),
+                    pendingIntent.intentSender
+                )
+            } else {
+                Intent.createChooser(
+                    intent,
+                    resources.getString(R.string.set_wallpaper)
+                )
+            }
+            startActivity(chooser)
+        }
+
+    }
+
+    // A receiver to get which one was chosen from the wallpaper chooser
+    class ComponentReceiver : BroadcastReceiver() {
+        override fun onReceive(p0: Context, p1: Intent) {
+            // https://stackoverflow.com/questions/9583230/what-is-the-purpose-of-intentsender#comment72280489_34314156
+            // EXTRA_CHOSEN_COMPONENT requires API 22
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                Log.d(
+                    "MainActivity",
+                    p1.extras!!.getParcelable<ComponentName>(Intent.EXTRA_CHOSEN_COMPONENT)!!.toString()
+                )
+            }
+        }
     }
 
     inner class MyGestureDetector : GestureDetector.SimpleOnGestureListener() {

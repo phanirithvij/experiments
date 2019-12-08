@@ -3,4 +3,6 @@
     <string name="meh">meh</string>
     <string name="start_livewallpaper_activity">Start LiveWallpaper activity</string>
     <string name="no_livewallpaper">Use a LiveWallpaper like Muzei to see how this works</string>
+    <string name="lwp_chooser">Lwp chooser</string>
+    <string name="set_wallpaper">Set Wallpaper</string>
 </resources>

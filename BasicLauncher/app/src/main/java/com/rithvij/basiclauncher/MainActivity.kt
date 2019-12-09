@@ -3,6 +3,8 @@ package com.rithvij.basiclauncher
 import android.app.PendingIntent
 import android.app.WallpaperManager
 import android.content.*
+import android.content.pm.ActivityInfo
+import android.content.pm.ApplicationInfo
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -113,6 +115,11 @@ class MainActivity : AppCompatActivity() {
                 Log.d(tag, it.activityInfo.packageName)
             }
 
+            val debugApps = getDebugApps()
+            debugApps.forEach {
+                Log.d("$tag-debug", it.packageName)
+            }
+
             // https://stackoverflow.com/a/19159291/8608146
             val receiver = Intent(this, ComponentReceiver::class.java)
             val pendingIntent =
@@ -133,6 +140,24 @@ class MainActivity : AppCompatActivity() {
             startActivity(chooser)
         }
 
+    }
+
+    // https://stackoverflow.com/a/59242174/8608146
+    private fun getDebugApps(): ArrayList<ActivityInfo> {
+        val allIntent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER)
+        val allApps = packageManager.queryIntentActivities(allIntent, 0)
+        val debugApps = arrayListOf<ActivityInfo>()
+        allApps.forEach {
+            val appInfo = (packageManager.getApplicationInfo(
+                it.activityInfo.packageName,
+                0
+            ))
+            if (0 != appInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) {
+                debugApps.add(it.activityInfo)
+            }
+        }
+
+        return debugApps
     }
 
     // A receiver to get which one was chosen from the wallpaper chooser

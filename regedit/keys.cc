@@ -6,6 +6,7 @@ vcvars64.bat
 cl /EHsc keys.cc /link Advapi32.lib
 */
 
+#pragma comment(lib, "Advapi32.lib")
 #include <windows.h>
 #include <stdio.h>
 
@@ -103,6 +104,6 @@ void EnumerateSubKeys(HKEY RootKey, char *subKey, unsigned int tabs = 0)
 
 int main()
 {
-    EnumerateSubKeys(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Creative");
+    EnumerateSubKeys(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Creative\\S-1-5-21-1131672954-3644571216-278812857-1001");
     return 0;
 }

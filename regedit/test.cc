@@ -26,7 +26,7 @@ int main()
     HKEY hKey;
     LONG lRes = RegOpenKeyExA(
         HKEY_LOCAL_MACHINE,
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Creative\\S-1-5-21-1131672954-3644571216-278812857-1001\\132178714475080228",
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Creative\\S-1-5-21-1131672954-3644571216-278812857-1001\\132327234926016960",
         0,
         KEY_READ,
         &hKey);

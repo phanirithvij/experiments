@@ -1,11 +1,12 @@
-#pragma comment(lib, "Advapi32.lib")
 #include <iostream>
 #include <string>
 #include <exception>
 #include <windows.h>
+#pragma comment(lib, "Advapi32.lib")
 /*
     Get a key's value from registry
     // https://stackoverflow.com/a/22954182/8608146
+    vcvars64.bat
     cl /EHsc main.cc /link Advapi32.lib
 */
 
@@ -56,7 +57,7 @@ std::wstring GetStringValueFromHKLM(const std::wstring &regSubKey, const std::ws
     }
     else
     {
-        std::cout << rc;
+        std::cout << rc << '\n';
         throw std::runtime_error("Windows system error code: " + std::to_string(rc));
     }
 }
@@ -65,7 +66,7 @@ int main()
 {
     std::wstring regSubKey;
 #ifdef _WIN64 // Manually switching between 32bit/64bit for the example. Use dwFlags instead.
-    regSubKey = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Creative\\S-1-5-21-1131672954-3644571216-278812857-1001\\132178714475080228";
+    regSubKey = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Creative\\S-1-5-21-1131672954-3644571216-278812857-1001\\132327234926016960";
 #else
     regSubKey = L"SOFTWARE\\Company Name\\Application Name\\";
 #endif

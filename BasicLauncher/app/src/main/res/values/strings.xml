@@ -6,4 +6,5 @@
     <string name="lwp_chooser">Lwp chooser</string>
     <string name="set_wallpaper">Set Wallpaper</string>
     <string name="no_settings">Settings not found</string>
+    <string name="clear">Clear</string>
 </resources>

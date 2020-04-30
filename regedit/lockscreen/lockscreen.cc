@@ -1,6 +1,6 @@
 /*
 Get a key's value from the registry method #2
-cl /EHsc main.cc keys.cc sid.cc
+cl /EHsc lockscreen.cc keys.cc sid.cc
 
 */
 #pragma comment(lib, "Advapi32.lib")
@@ -25,6 +25,7 @@ LONG GetStringRegKey(HKEY hKey, const std::string &strValueName, std::string &st
 
 int main()
 {
+
     HKEY hKey;
     LONG lRes = RegOpenKeyExA(
         HKEY_LOCAL_MACHINE,

@@ -115,12 +115,22 @@ string EnumerateSubKeys(HKEY RootKey, string subKey, unsigned int tabs = 0)
 
 string getLockScreenRegKey()
 {
+    // https://www.winhelponline.com/blog/find-file-name-lock-screen-image-current-displayed/
+
+    // In Windows 10 versions 1803 and higher, the current lock screen wallpaper image is stored in string values (REG_SZ) namely landscapeImage and portraitImage, under the following registry key:
+    // HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Creative\<your SID>\<random-key-name>
+
     // TODO
+    /* In Windows 10 version 1709 and earlier, the lock screen image (Windows Spotlight) file name for the currently displayed landscape and portrait assets are stored in the following registry key:
+        HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Lock Screen\Creative
+    */
+
     // get sid
     // PID of current process
     DWORD dwPID = GetCurrentProcessId();
     string sid = GetProcessSID(dwPID);
-    cout << sid << '\n';
+    // cout << sid << '\n';
+    // get the last subKey out of availabe 3 (in my pc)
     string lastSubKey = EnumerateSubKeys(
         HKEY_LOCAL_MACHINE,
         "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Creative\\" + sid);

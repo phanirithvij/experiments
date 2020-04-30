@@ -14,7 +14,7 @@ import (
 )
 
 // TODO get the transcodeimagecache byte array from registry
-// TODO if possible convert this to python
+// TODO if possible convert this to c++
 
 func main() {
 	// this byte array was obtained from

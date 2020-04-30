@@ -23,9 +23,8 @@ LONG GetStringRegKey(HKEY hKey, const std::string &strValueName, std::string &st
     return nError;
 }
 
-int main()
+string getLockScreenPath()
 {
-
     HKEY hKey;
     LONG lRes = RegOpenKeyExA(
         HKEY_LOCAL_MACHINE,
@@ -39,12 +38,18 @@ int main()
     std::string strValueOfBinDir;
     // default-value will be the defalut value
     GetStringRegKey(hKey, "landscapeImage", strValueOfBinDir, "default-value");
-    std::cout << strValueOfBinDir;
+    // std::cout << strValueOfBinDir;
     // std::string strKeyDefaultValue;
     // GetStringRegKey(hKey, "", strKeyDefaultValue, "default-value");
     // std::cout << strKeyDefaultValue;
 
     RegCloseKey(hKey);
+    return strValueOfBinDir;
+}
 
+int main()
+{
+    // no endl;
+    cout << getLockScreenPath();
     return 0;
 }

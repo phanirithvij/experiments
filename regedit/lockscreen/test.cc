@@ -7,8 +7,12 @@
     Get a key's value from registry
     // https://stackoverflow.com/a/22954182/8608146
     vcvars64.bat
-    cl /EHsc main.cc /link Advapi32.lib
+    cl /EHsc test.cc /link Advapi32.lib
 */
+
+// Note to self
+// don't bother changing wstring to string
+// the output will be trimmed i.e. partial and incomplete
 
 /*! \brief                          Returns a value from HKLM as string.
     \exception  std::runtime_error  Replace with your error handling.

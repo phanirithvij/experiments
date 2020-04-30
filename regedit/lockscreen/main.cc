@@ -1,11 +1,13 @@
 /*
 Get a key's value from the registry method #2
-cl /EHsc test.cc /link Advapi32.lib
+cl /EHsc main.cc keys.cc sid.cc
+
 */
 #pragma comment(lib, "Advapi32.lib")
 #include <windows.h>
 #include <iostream>
 #include <string>
+#include "keys.hh"
 
 LONG GetStringRegKey(HKEY hKey, const std::string &strValueName, std::string &strValue, const std::string &strDefaultValue)
 {
@@ -26,7 +28,8 @@ int main()
     HKEY hKey;
     LONG lRes = RegOpenKeyExA(
         HKEY_LOCAL_MACHINE,
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Creative\\S-1-5-21-1131672954-3644571216-278812857-1001\\132327234926016960",
+        getLockScreenRegKey().c_str(),
+        // "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Creative\\S-1-5-21-1131672954-3644571216-278812857-1001\\132327234926016960",
         0,
         KEY_READ,
         &hKey);

@@ -3,12 +3,15 @@ This code recursively prints all keys, subkeys under a given key in the Windows 
 
 // vcvars32.bat Didn't work
 vcvars64.bat
-cl /EHsc keys.cc /link Advapi32.lib
+cl /EHsc keys.cc sid.cc /link Advapi32.lib
 */
 
+// with this line /link Advapi32.lib is obsolete
 #pragma comment(lib, "Advapi32.lib")
-#include <windows.h>
-#include <stdio.h>
+#include "sid.hh"
+#include "keys.hh"
+
+using namespace std;
 
 void EnumerateValues(HKEY hKey, DWORD numValues)
 {
@@ -41,8 +44,10 @@ void EnumerateValues(HKEY hKey, DWORD numValues)
     RegCloseKey(hKey);
 }
 
-void EnumerateSubKeys(HKEY RootKey, char *subKey, unsigned int tabs = 0)
+string EnumerateSubKeys(HKEY RootKey, string subKey, unsigned int tabs = 0)
 {
+    string lastSubKey;
+
     HKEY hKey;
     DWORD cSubKeys;     //Used to store the number of Subkeys
     DWORD maxSubkeyLen; //Longest Subkey name length
@@ -50,7 +55,7 @@ void EnumerateSubKeys(HKEY RootKey, char *subKey, unsigned int tabs = 0)
     DWORD maxValueLen;  //Longest Subkey name length
     DWORD retCode;      //Return values of calls
 
-    RegOpenKeyExA(RootKey, subKey, 0, KEY_ALL_ACCESS, &hKey);
+    RegOpenKeyExA(RootKey, subKey.c_str(), 0, KEY_ALL_ACCESS, &hKey);
 
     RegQueryInfoKey(hKey,          // key handle
                     nullptr,       // buffer for class name
@@ -84,13 +89,16 @@ void EnumerateSubKeys(HKEY RootKey, char *subKey, unsigned int tabs = 0)
 
             if (retCode == ERROR_SUCCESS)
             {
-                for (int i = 0; i < tabs; i++)
-                    printf("\t");
-                printf("(%d) %s\n", i + 1, currentSubkey);
+                // for (int i = 0; i < tabs; i++)
+                //     printf("\t");
+                // printf("(%d) %s\n", i + 1, currentSubkey);
 
-                char *subKeyPath = new char[currentSubLen + strlen(subKey)];
-                sprintf(subKeyPath, "%s\\%s", subKey, currentSubkey);
-                EnumerateSubKeys(RootKey, subKeyPath, (tabs + 1));
+                char *subKeyPath = new char[currentSubLen + subKey.size()];
+                // sprintf(subKeyPath, "%s\\%s", subKey.c_str(), currentSubkey);
+                lastSubKey = string(currentSubkey);
+                // recursion for going down
+                // not needed for my use
+                // EnumerateSubKeys(RootKey, subKeyPath, (tabs + 1));
             }
         }
     }
@@ -100,10 +108,22 @@ void EnumerateSubKeys(HKEY RootKey, char *subKey, unsigned int tabs = 0)
     }
 
     RegCloseKey(hKey);
+
+    // remove this if using recusion
+    return lastSubKey;
 }
 
-int main()
+string getLockScreenRegKey()
 {
-    EnumerateSubKeys(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Creative\\S-1-5-21-1131672954-3644571216-278812857-1001");
-    return 0;
+    // TODO
+    // get sid
+    // PID of current process
+    DWORD dwPID = GetCurrentProcessId();
+    string sid = GetProcessSID(dwPID);
+    cout << sid << '\n';
+    string lastSubKey = EnumerateSubKeys(
+        HKEY_LOCAL_MACHINE,
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Creative\\" + sid);
+
+    return "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Authentication\\LogonUI\\Creative\\" + sid + "\\" + lastSubKey;
 }

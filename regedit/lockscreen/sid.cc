@@ -5,10 +5,8 @@ This gets the current process' user's sid
 // I web archived it https://web.archive.org/web/20160502161610/http://www.codeproject.com/Articles/14828/How-To-Get-Process-Owner-ID-and-Current-User-SID?msg=4038457#xx4038457xx
 cl /EHsc sid.cc /link Advapi32.lib
 */
-#include <iostream>
-#include <string>
-#include <windows.h>
-#include <sddl.h>
+
+#include "sid.hh"
 #pragma comment(lib, "Advapi32.lib")
 
 using namespace std;
@@ -68,10 +66,10 @@ string GetProcessSID(DWORD dwProcessID)
 
     return wstrSID;
 }
-int main(int argc, char *argv[])
-{
-    // PID of current process
-    DWORD dwPID = GetCurrentProcessId();
-    std::cout << GetProcessSID(dwPID) << '\n';
-    return 0;
-}
+// int main(int argc, char *argv[])
+// {
+//     // PID of current process
+//     DWORD dwPID = GetCurrentProcessId();
+//     std::cout << GetProcessSID(dwPID) << '\n';
+//     return 0;
+// }

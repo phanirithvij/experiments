@@ -17,7 +17,6 @@ import (
 	"unsafe"
 
 	"github.com/kbinani/win"
-	_ "github.com/phanirithvij/experiments/regedit/lockscreen/go/wpaper"
 
 	"golang.org/x/sys/windows/registry"
 )

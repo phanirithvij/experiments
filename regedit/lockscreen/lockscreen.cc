@@ -49,6 +49,10 @@ string getLockScreenPath()
 
 int main()
 {
+    // TODO
+    // look at these
+    // https://docs.microsoft.com/en-us/uwp/api/windows.system.userprofile.lockscreen.originalimagefile?view=winrt-18362#Windows_System_UserProfile_LockScreen_OriginalImageFile
+    // https://docs.microsoft.com/en-us/uwp/api/Windows.System.UserProfile.LockScreen?redirectedfrom=MSDN&view=winrt-18362
     // no endl;
     cout << getLockScreenPath();
     return 0;

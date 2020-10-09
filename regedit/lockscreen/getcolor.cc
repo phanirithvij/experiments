@@ -1,6 +1,10 @@
+// cl /EHsc getcolor.cc
+
 #include <windows.h>
 #include <stdio.h>
 #pragma comment(lib, "user32.lib")
+
+// https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-setsyscolors#examples
 
 void main()
 {

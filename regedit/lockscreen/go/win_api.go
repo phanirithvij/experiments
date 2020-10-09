@@ -1,4 +1,4 @@
-package main
+package wpaper
 
 import "github.com/kbinani/win"
 

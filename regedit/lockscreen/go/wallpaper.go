@@ -8,7 +8,7 @@
 
 // https://github.com/austinhyde/wallpaper-go/blob/master/winutils/winutils.go
 
-package main
+package wpaper
 
 import (
 	"fmt"

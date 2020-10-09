@@ -81,8 +81,8 @@ func _readTranscodedImageCacheName(name string) (string, error) {
 }
 
 func setBgColor(r, g, b int) bool {
-	var aElements int32 = ColorBackground
-	color := rgb(r, g, b)
+	var aElements int32 = wpaper.ColorBackground
+	color := wpaper.RGB(r, g, b)
 	d := win.SetSysColors(1, &aElements, &color)
 	return d
 }

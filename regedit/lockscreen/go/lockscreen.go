@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"os/user"
@@ -10,15 +9,15 @@ import (
 	"golang.org/x/sys/windows/registry"
 )
 
-func main() {
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	d, err := getLockScreenPath()
-	if err != nil {
+// func main() {
+// 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+// 	d, err := getLockScreenPath()
+// 	if err != nil {
 
-		log.Fatal(err)
-	}
-	fmt.Println(d)
-}
+// 		log.Fatal(err)
+// 	}
+// 	fmt.Println(d)
+// }
 
 func getUserSID() (string, error) {
 	uinstance, err := user.Current()

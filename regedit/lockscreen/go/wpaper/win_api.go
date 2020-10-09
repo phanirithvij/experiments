@@ -19,7 +19,7 @@ const (
 // from wingdi.h
 // #define RGB(r,g,b)	((COLORREF)(((BYTE)(r)| ((WORD)((BYTE)(g))<<8))| (((DWORD)(BYTE)(b))<<16)))
 
-func rgb(r, g, b int) win.COLORREF {
+func RGB(r, g, b int) win.COLORREF {
 	rpart := (dword)((byte)(r))
 	gpart := (dword)((byte)(g)) << 8
 	bpart := (dword)((byte)(b)) << 16

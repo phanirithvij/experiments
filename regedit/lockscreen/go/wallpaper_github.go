@@ -1,8 +1,12 @@
 package main
 
 import (
+	"encoding/hex"
+	"errors"
 	"fmt"
+	"image/color"
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/kbinani/win"
@@ -38,6 +42,17 @@ func getDesktopWallpaper() (string, error) {
 	return ret, nil
 }
 
+func getImageColor() (uint64, error) {
+	// HKEY_CURRENT_USER\Control Panel\Desktop
+	key, err := registry.OpenKey(registry.CURRENT_USER, `Control Panel\Desktop`, registry.READ)
+	defer key.Close()
+	if err != nil {
+		return 0, err
+	}
+	color, _, err := key.GetIntegerValue("ImageColor")
+	return color, err
+}
+
 func getBgColor() (string, error) {
 	// HKEY_CURRENT_USER\Control Panel\Colors
 	key, err := registry.OpenKey(registry.CURRENT_USER, `Control Panel\Colors`, registry.READ)
@@ -49,6 +64,8 @@ func getBgColor() (string, error) {
 	return color, err
 }
 
+// https://github.com/austinhyde/wallpaper-go/blob/master/winutils/winutils.go#L168
+// Also forked on my acc https://github.com/phanirithvij/wallpaper-go/blob/master/winutils/winutils.go#L168
 func readTranscodedImageCache(i int) (string, error) {
 	name := "TranscodedImageCache"
 	withI := name + fmt.Sprintf("_%03d", i)
@@ -88,6 +105,53 @@ func setBgColor(r, g, b int) bool {
 	return d
 }
 
+func hexStringToRGBA(hexstr string) (color.RGBA, error) {
+	// var hexuint uint64
+	if len(hexstr) == 3 {
+		// Odd length hex string
+		hexstr = hexstr + hexstr
+	}
+	bytea, err := hex.DecodeString(hexstr)
+	retcol := color.RGBA{}
+	if err != nil {
+		return retcol, err
+	}
+
+	if len(bytea) < 3 {
+		return retcol, errors.New("Not a valid hex string")
+	}
+	if len(bytea) == 4 {
+		retcol.A = bytea[0]
+		retcol.R = bytea[1]
+		retcol.G = bytea[2]
+		retcol.B = bytea[3]
+	} else {
+		// len == 3
+		retcol.A = 255
+		retcol.R = bytea[0]
+		retcol.G = bytea[1]
+		retcol.B = bytea[2]
+	}
+	return retcol, nil
+}
+
+// Alternate slow implementation which does int to string and then uses hex decode
+func hexToRGBA2(col uint64) (color.RGBA, error) {
+	hexstr := strconv.FormatInt((int64)(col), 16)
+	colw, err := hexStringToRGBA(hexstr)
+	return colw, err
+}
+
+func hexToRGBA(col uint64) (color.RGBA, error) {
+	// log.Println("0x" + strconv.FormatInt((int64)(col), 16))
+	a := (uint8)((col >> 24) & 0xFF) // Extract the AA byte
+	r := (uint8)((col >> 16) & 0xFF) // Extract the RR byte
+	g := (uint8)((col >> 8) & 0xFF)  // Extract the GG byte
+	b := (uint8)((col) & 0xFF)       // Extract the BB byte
+	// log.Println(r, g, b, a)
+	return color.RGBA{A: a, R: r, G: g, B: b}, nil
+}
+
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
@@ -105,6 +169,14 @@ func main() {
 		log.Println("wallpaper is a slideshow")
 	}
 	log.Println(wallpaper)
+
+	col, err := getImageColor()
+	colors, err := hexToRGBA(col)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(colors)
+
 	if data == "" {
 		log.Println("solid color or wallpaper")
 		color, err := getBgColor()

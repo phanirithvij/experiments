@@ -16,6 +16,8 @@ import (
 	"syscall"
 	"unsafe"
 
+	"github.com/kbinani/win"
+
 	"golang.org/x/sys/windows/registry"
 )
 
@@ -96,7 +98,7 @@ var (
 
 // colorref ...
 // https://github.com/kbinani/win/blob/47348268596a5a7daca78499d4d2e070f7055084/types.go#L1549
-type colorref uint32
+type colorref win.COLORREF
 
 // SetSysColors To set colors
 // https://github.com/kbinani/win/blob/47348268596a5a7daca78499d4d2e070f7055084/user32.go#L5160

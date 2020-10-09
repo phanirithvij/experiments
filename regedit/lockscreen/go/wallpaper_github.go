@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/kbinani/win"
 
@@ -94,21 +95,24 @@ func main() {
 	data, err := readTranscodedImageCache(0)
 	if err != nil {
 		log.Fatal(err)
-		return
 	}
+
+	wallpaper, err := getDesktopWallpaper()
+	if err != nil {
+		log.Fatal(err)
+	}
+	if strings.Contains(wallpaper, `AppData\Roaming\Microsoft\Windows\Themes\TranscodedWallpaper`) {
+		log.Println("wallpaper is a slideshow")
+	}
+	log.Println(wallpaper)
 	if data == "" {
-		fmt.Println("solid color or wallpaper")
-		wallpaper, err := getDesktopWallpaper()
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Println(wallpaper)
+		log.Println("solid color or wallpaper")
 		color, err := getBgColor()
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(color)
+		log.Println(color)
 	} else {
-		fmt.Println(data)
+		log.Println(data)
 	}
 }

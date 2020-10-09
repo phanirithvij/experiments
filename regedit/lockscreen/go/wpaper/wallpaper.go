@@ -94,6 +94,10 @@ var (
 	setSysColors uintptr
 )
 
+// colorref ...
+// https://github.com/kbinani/win/blob/47348268596a5a7daca78499d4d2e070f7055084/types.go#L1549
+type colorref uint32
+
 // SetSysColors To set colors
 // https://github.com/kbinani/win/blob/47348268596a5a7daca78499d4d2e070f7055084/user32.go#L5160
 func SetSysColors(cElements int32, lpaElements /*const*/ *int32, lpaRgbValues /*const*/ *colorref) (bool, syscall.Errno) {

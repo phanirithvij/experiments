@@ -33,14 +33,14 @@ private:
     IUnknown *m_p;
 };
 
-DLLAPI LPWSTR system_wallpaper(WallpapersInfo *& info)
+DLLAPI bool system_wallpaper(WallpapersInfo *& info)
 {
 
     HRESULT hr = CoInitialize(NULL);
     if (FAILED(hr))
     {
         fprintf(stderr, "[error] CoInitialize returned 0x%08x", hr);
-        return NULL;
+        return false;
     }
     CoUninitializeOnExit cuoe;
 
@@ -49,7 +49,7 @@ DLLAPI LPWSTR system_wallpaper(WallpapersInfo *& info)
     if (FAILED(hr))
     {
         fprintf(stderr, "[error] CoCreateInstance(__uuidof(DesktopWallpaper)) returned 0x%08x", hr);
-        return NULL;
+        return false;
     }
     ReleaseOnExit releaseDesktopWallpaper((IUnknown *)pDesktopWallpaper);
 
@@ -58,7 +58,7 @@ DLLAPI LPWSTR system_wallpaper(WallpapersInfo *& info)
     if (hr != S_OK)
     {
         fprintf(stderr, "[error] IDesktopWallpaper::GetMonitorDevicePathAt returned 0x%08x", hr);
-        return NULL;
+        return false;
     }
 
     LPWSTR wallpaper_wcs;
@@ -66,16 +66,18 @@ DLLAPI LPWSTR system_wallpaper(WallpapersInfo *& info)
     if (hr != S_OK)
     {
         fprintf(stderr, "[error] IDesktopWallpaper::GetWallpaper returned 0x%08x", hr);
-        return NULL;
+        return false;
     }
 
+    // https://social.msdn.microsoft.com/Forums/en-US/edc2e1de-c7c6-4bef-becb-cf4924165551/decode-encrypted-path-from-slideshowdirectorypath1?forum=windowsgeneraldevelopmentissues
+    // The problem is,  IShellItemArray items = wallpaper.GetSlideshow(); where IDesktopWallpaper wallpaper = (IDesktopWallpaper)(new DesktopWallpaperClass()); gives me only the correct path, when slideshow is turned on. But for activating it (wallpaper.SetSlideshow(items)) , i need stored path from SlideshowDirectoryPath1.
     // https://github.com/psychoria/MFCClasses/blob/5698c849f4206e535f068d72fdf16c00e5544998/PGWallpaper.cpp#L125
     IShellItemArray *pIShell = nullptr;
     hr = pDesktopWallpaper->GetSlideshow(&pIShell);
     if (hr != S_OK)
     {
         fprintf(stderr, "[error] IDesktopWallpaper::GetSlideShow returned 0x%08x", hr);
-        return NULL;
+        return false;
     }
 
     DWORD dwd = 0;
@@ -83,7 +85,7 @@ DLLAPI LPWSTR system_wallpaper(WallpapersInfo *& info)
     if (hr != S_OK)
     {
         fprintf(stderr, "[error] pIShell->GetCount returned 0x%08x", hr);
-        return NULL;
+        return false;
     }
 
     IShellItem *pIShellItem = nullptr;
@@ -91,7 +93,7 @@ DLLAPI LPWSTR system_wallpaper(WallpapersInfo *& info)
     if (hr != S_OK)
     {
         fprintf(stderr, "[error] pIShell->GetItemAt returned 0x%08x", hr);
-        return NULL;
+        return false;
     }
 
     // https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/ne-shobjidl_core-sigdn
@@ -101,5 +103,5 @@ DLLAPI LPWSTR system_wallpaper(WallpapersInfo *& info)
     info->SlideshowPath = slideshow_path;
     info->WallpaperPath = wallpaper_wcs;
 
-    return NULL;
+    return true;
 }

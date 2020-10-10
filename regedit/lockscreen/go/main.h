@@ -16,6 +16,6 @@ typedef struct
   LPWSTR WallpaperPath;
 } WallpapersInfo;
 
-DLLAPI LPWSTR system_wallpaper(WallpapersInfo *& info);
+DLLAPI bool system_wallpaper(WallpapersInfo *& info);
 // DLLAPI WallpapersInfo *system_wallpaper(WallpapersInfo *info);
 #endif

@@ -9,7 +9,7 @@
 
 /* 
     vcvars64.bat
-    cl wallpaper.cc more.cc /EHsc
+    cl wallpaper.cc main.cc /EHsc
     .\wallpaper.exe
 */
 using namespace std;
@@ -19,13 +19,19 @@ int main()
     // https://stackoverflow.com/a/9840028/8608146
     WallpapersInfo info;
     WallpapersInfo *infoptr = &info;
-    system_wallpaper(infoptr);
+    bool ret = system_wallpaper(infoptr);
 
-    std::wcout << info.WallpaperPath << std::endl;
-    std::wcout << info.SlideshowPath << std::endl;
+    if (ret)
+    {
+        // If sideshow not active ret WILL be FALSE
 
-    CoTaskMemFree(info.SlideshowPath);
-    CoTaskMemFree(info.WallpaperPath);
+        // will crash if ret is false and we access this
+        std::wcout << info.WallpaperPath << std::endl;
+        std::wcout << info.SlideshowPath << std::endl;
+
+        CoTaskMemFree(info.SlideshowPath);
+        CoTaskMemFree(info.WallpaperPath);
+    }
 
     return 0;
 }

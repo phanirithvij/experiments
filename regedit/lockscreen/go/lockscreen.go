@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"errors"
 	"io"
 	"log"
@@ -9,14 +10,75 @@ import (
 	"golang.org/x/sys/windows/registry"
 )
 
-// func main() {
-// 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-// 	d, err := getLockScreenPath()
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	fmt.Println(d)
-// }
+func main() {
+	log.SetFlags(0)
+	// log.SetFlags(log.LstdFlags | log.Lshortfile)
+	// d, err := getLockScreenPath()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Println(d)
+	getSysLockScreenConfig()
+}
+
+func getSysLockScreenConfig() {
+	// sid, err := getUserSID()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	data, err := hex.DecodeString("9a19a1622d473e54073d5bd08883f92a1852")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(data)
+	// S-1-5-21-1131672954-3644571216-278812857-1001\SOFTWARE\Microsoft\Windows\CurrentVersion\Lock Screen
+	ret := `SOFTWARE\Microsoft\Windows\CurrentVersion\Lock Screen`
+	// ret := sid + `\SOFTWARE\Microsoft\Windows\CurrentVersion\Lock Screen`
+	key, err := registry.OpenKey(registry.CURRENT_USER, ret, registry.READ)
+	// key, err := registry.OpenKey(registry.USERS, ret, registry.READ)
+	defer key.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	subValues, err := key.ReadValueNames(100)
+	for _, v := range subValues {
+		_, b, err := key.GetValue(v, nil)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if b == registry.SZ || b == registry.EXPAND_SZ {
+			// data, _, _ := key.GetStringValue(v)
+			// log.Println("string", data)
+		} else if b == registry.BINARY {
+			bin, _, _ := key.GetBinaryValue(v)
+			log.Println(v, "binary", len(bin))
+			data := []byte{}
+			for i := 0; i < len(bin); i++ {
+				if bin[i] != 0 {
+					data = append(data, bin[i])
+				}
+			}
+			log.Println(string(data), len(data))
+		} else if b == registry.DWORD || b == registry.DWORD_BIG_ENDIAN {
+			// data, _, _ := key.GetIntegerValue(v)
+			// log.Println("integer", data)
+		} else {
+			// var buf []byte
+			// buf = make([]byte, n)
+			// n, b, err = key.GetValue(v, buf)
+			// if err != nil {
+			// 	log.Fatal(err)
+			// }
+			// log.Println("unknown type", buf)
+		}
+
+		// log.Println(key.GetStringValue())
+	}
+	if (err != nil && err != io.EOF) || len(subValues) == 0 {
+		log.Fatal(err)
+	}
+}
 
 func getUserSID() (string, error) {
 	uinstance, err := user.Current()

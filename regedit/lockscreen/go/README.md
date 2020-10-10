@@ -1,6 +1,11 @@
 ## TODO
 
+- need to decode `ImagesRootPIDL`
+- %USERPROFILE%\AppData\Local\Microsoft\Windows\
+- Computer\HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Wallpapers has `BackgroundType` which becomes 0, 1, 2 with Picture, Solid Color, Slideshow respectively
+
 The following places have stuff about the lock screen when in slide show and in picture
+- Computer\HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Lock Screen
 - Computer\HKEY_USERS\S-1-5-21-1131672954-3644571216-278812857-1001\SOFTWARE\Microsoft\Windows\CurrentVersion\Lock Screen
 - HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\SystemProtectedUserData\S-1-5-21-1131672954-3644571216-278812857-1001\AnyoneRead\LockScreen
 

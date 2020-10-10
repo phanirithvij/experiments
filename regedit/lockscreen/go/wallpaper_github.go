@@ -5,9 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"image/color"
-	"log"
 	"strconv"
-	"strings"
 
 	"github.com/kbinani/win"
 
@@ -152,39 +150,39 @@ func hexToRGBA(col uint64) (color.RGBA, error) {
 	return color.RGBA{A: a, R: r, G: g, B: b}, nil
 }
 
-func main() {
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
+// func main() {
+// 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	// Try first for transcodeimagecache (slideshow)
-	data, err := readTranscodedImageCache(0)
-	if err != nil {
-		log.Fatal(err)
-	}
+// 	// Try first for transcodeimagecache (slideshow)
+// 	data, err := readTranscodedImageCache(0)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
 
-	wallpaper, err := getDesktopWallpaper()
-	if err != nil {
-		log.Fatal(err)
-	}
-	if strings.Contains(wallpaper, `AppData\Roaming\Microsoft\Windows\Themes\TranscodedWallpaper`) {
-		log.Println("wallpaper is a slideshow")
-	}
-	log.Println(wallpaper)
+// 	wallpaper, err := getDesktopWallpaper()
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	if strings.Contains(wallpaper, `AppData\Roaming\Microsoft\Windows\Themes\TranscodedWallpaper`) {
+// 		log.Println("wallpaper is a slideshow")
+// 	}
+// 	log.Println(wallpaper)
 
-	col, err := getImageColor()
-	colors, err := hexToRGBA(col)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println(colors)
+// 	col, err := getImageColor()
+// 	colors, err := hexToRGBA(col)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	log.Println(colors)
 
-	if data == "" {
-		log.Println("solid color or wallpaper")
-		color, err := getBgColor()
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Println(color)
-	} else {
-		log.Println(data)
-	}
-}
+// 	if data == "" {
+// 		log.Println("solid color or wallpaper")
+// 		color, err := getBgColor()
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+// 		log.Println(color)
+// 	} else {
+// 		log.Println(data)
+// 	}
+// }

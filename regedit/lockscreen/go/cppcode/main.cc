@@ -4,8 +4,8 @@
 #include <Objbase.h>
 #include "main.h"
 
-#pragma comment(lib, "shell32.lib")
-#pragma comment(lib, "Ole32.lib")
+// #pragma comment(lib, "shell32.lib")
+// #pragma comment(lib, "Ole32.lib")
 
 /* 
     vcvars64.bat

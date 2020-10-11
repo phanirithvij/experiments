@@ -54,15 +54,16 @@ func getImageColor() (uint64, error) {
 	return color, err
 }
 
-func getBgColor() (string, error) {
+func getBgColor() (color.RGBA, error) {
 	// HKEY_CURRENT_USER\Control Panel\Colors
 	key, err := registry.OpenKey(registry.CURRENT_USER, `Control Panel\Colors`, registry.READ)
 	defer key.Close()
 	if err != nil {
-		return "", err
+		return color.RGBA{}, err
 	}
-	color, _, err := key.GetStringValue("Background")
-	return color, err
+	colorstr, _, err := key.GetStringValue("Background")
+	log.Println(colorstr)
+	return color.RGBA{}, err
 }
 
 // https://github.com/austinhyde/wallpaper-go/blob/master/winutils/winutils.go#L168
@@ -177,6 +178,7 @@ type WallpaperInfo struct {
 	WallpaperType WallpaperType `json:"type"`
 	HelpMsg       string        `json:"help"`
 	Path          string        `json:"path"`
+	SolidColor    color.RGBA    `json:"color"`
 	ImageColor    color.RGBA    `json:"imageColor"`
 }
 
@@ -190,13 +192,18 @@ func (w WallpaperInfo) String() string {
 	return string(bytes)
 }
 
-func main() {
-	log.SetFlags(0)
+// func main() {
+// 	log.SetFlags(0)
+// 	// log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-	// log.SetFlags(log.LstdFlags | log.Lshortfile)
+// 	winfo := GetWallpaperInfo()
+// 	// https://stackoverflow.com/a/24512194/8608146
+// 	log.Println(winfo)
+// }
 
+// GetWallpaperInfo returns the Wallpaper info
+func GetWallpaperInfo() WallpaperInfo {
 	winfo := &WallpaperInfo{}
-
 	wallpaper, err := getDesktopWallpaper()
 	if err != nil {
 		log.Fatal(err)
@@ -231,7 +238,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		winfo.Path = color
+		winfo.SolidColor = color
 	} else {
 		col, err := getImageColor()
 		color, err := hexToRGBA(col)
@@ -240,6 +247,5 @@ func main() {
 		}
 		winfo.ImageColor = color
 	}
-	// https://stackoverflow.com/a/24512194/8608146
-	log.Println(winfo)
+	return *winfo
 }

@@ -15,16 +15,16 @@ import (
 	"golang.org/x/sys/windows/registry"
 )
 
-func main() {
-	log.SetFlags(0)
-	// log.SetFlags(log.LstdFlags | log.Lshortfile)
-	d, err := getLockScreenPath()
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println(d)
-	// fmt.Println(d)
-}
+// func main() {
+// 	log.SetFlags(0)
+// 	// log.SetFlags(log.LstdFlags | log.Lshortfile)
+// 	d, err := getLockScreenPath()
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	log.Println(d)
+// 	// fmt.Println(d)
+// }
 
 func getSysLockScreenConfig() {
 	// sid, err := getUserSID()

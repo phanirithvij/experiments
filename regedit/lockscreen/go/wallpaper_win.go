@@ -2,10 +2,13 @@ package main
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"image/color"
+	"log"
 	"strconv"
+	"strings"
 
 	"github.com/kbinani/win"
 
@@ -82,6 +85,7 @@ func readTranscodedImageCache(i int) (string, error) {
 func _readTranscodedImageCacheName(name string) (string, error) {
 	bin, err := getRegBin(registry.CURRENT_USER, `Control Panel\Desktop`, name)
 	if err == registry.ErrNotExist {
+		// log.Println("registry not exists")
 		return "", nil
 	} else if err != nil {
 		return "", err
@@ -150,39 +154,92 @@ func hexToRGBA(col uint64) (color.RGBA, error) {
 	return color.RGBA{A: a, R: r, G: g, B: b}, nil
 }
 
-// func main() {
-// 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+// https://programming.guide/go/define-enumeration-string.html
 
-// 	// Try first for transcodeimagecache (slideshow)
-// 	data, err := readTranscodedImageCache(0)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
+// WallpaperType Enum for the wallpaper type
+type WallpaperType int
 
-// 	wallpaper, err := getDesktopWallpaper()
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	if strings.Contains(wallpaper, `AppData\Roaming\Microsoft\Windows\Themes\TranscodedWallpaper`) {
-// 		log.Println("wallpaper is a slideshow")
-// 	}
-// 	log.Println(wallpaper)
+const (
+	// Picture wallpaper
+	Picture WallpaperType = iota
+	// SolidColor wallpaper
+	SolidColor
+	// Slideshow wallpaper
+	Slideshow
+)
 
-// 	col, err := getImageColor()
-// 	colors, err := hexToRGBA(col)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	log.Println(colors)
+func (w WallpaperType) String() string {
+	return [...]string{"Picture", "SolidColor", "Slideshow"}[w]
+}
 
-// 	if data == "" {
-// 		log.Println("solid color or wallpaper")
-// 		color, err := getBgColor()
-// 		if err != nil {
-// 			log.Fatal(err)
-// 		}
-// 		log.Println(color)
-// 	} else {
-// 		log.Println(data)
-// 	}
-// }
+// WallpaperInfo holds the wallpapr information
+type WallpaperInfo struct {
+	WallpaperType WallpaperType `json:"type"`
+	HelpMsg       string        `json:"help"`
+	Path          string        `json:"path"`
+	ImageColor    color.RGBA    `json:"imageColor"`
+}
+
+func (w WallpaperInfo) String() string {
+	bytes, err := json.Marshal(w)
+	if err != nil {
+		// https://stackoverflow.com/q/64306027/8608146
+		type WallpaperInfoDup WallpaperInfo
+		return fmt.Sprintf("%+v\n", WallpaperInfoDup(w))
+	}
+	return string(bytes)
+}
+
+func main() {
+	log.SetFlags(0)
+
+	// log.SetFlags(log.LstdFlags | log.Lshortfile)
+
+	winfo := &WallpaperInfo{}
+
+	wallpaper, err := getDesktopWallpaper()
+	if err != nil {
+		log.Fatal(err)
+	}
+	var data string = ""
+
+	if strings.Contains(wallpaper, `AppData\Roaming\Microsoft\Windows\Themes\TranscodedWallpaper`) {
+		winfo.WallpaperType = Slideshow
+		// Try first for transcodeimagecache (slideshow)
+		data, err = readTranscodedImageCache(0)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if data == "" {
+			// for some reason transcodeimagecache was unreadable
+			// print the TranscodedWallpaper path
+			winfo.HelpMsg = "Wallpaper's exact path couldn't be determined but this path contains a copy of it"
+			winfo.Path = wallpaper
+		} else {
+			winfo.HelpMsg = "Wallpaper is a slideshow"
+			winfo.Path = data
+		}
+
+	} else {
+		log.Println(wallpaper)
+	}
+
+	if wallpaper == "" && data == "" {
+		winfo.HelpMsg = "Not a wallpaper but a solid color"
+		winfo.WallpaperType = SolidColor
+		color, err := getBgColor()
+		if err != nil {
+			log.Fatal(err)
+		}
+		winfo.Path = color
+	} else {
+		col, err := getImageColor()
+		color, err := hexToRGBA(col)
+		if err != nil {
+			log.Fatal(err)
+		}
+		winfo.ImageColor = color
+	}
+	// https://stackoverflow.com/a/24512194/8608146
+	log.Println(winfo)
+}

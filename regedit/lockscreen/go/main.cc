@@ -19,18 +19,26 @@ int main()
     // https://stackoverflow.com/a/9840028/8608146
     WallpapersInfo info;
     WallpapersInfo *infoptr = &info;
-    bool ret = system_wallpaper(infoptr);
+    bool ret = system_wallpaper_info(infoptr);
 
+    std::cout << info.WallpaperPath << std::endl;
     if (ret)
     {
         // If sideshow not active ret WILL be FALSE
 
         // will crash if ret is false and we access this
-        std::wcout << info.WallpaperPath << std::endl;
-        std::wcout << info.SlideshowPath << std::endl;
+        std::cout << info.SlideshowPath << std::endl;
 
-        CoTaskMemFree(info.SlideshowPath);
-        CoTaskMemFree(info.WallpaperPath);
+        // These free won't free
+        // free(infoptr->SlideshowPath);
+        // free(infoptr->WallpaperPath);
+
+        // these free will crash the program
+        // free(infoptr);
+
+        infoptr->SlideshowPath = nullptr;
+        infoptr->WallpaperPath = nullptr;
+        infoptr = nullptr;
     }
 
     return 0;

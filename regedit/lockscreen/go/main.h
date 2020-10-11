@@ -12,10 +12,11 @@
 
 typedef struct
 {
-  LPWSTR SlideshowPath;
-  LPWSTR WallpaperPath;
+  char *SlideshowPath;
+  char *WallpaperPath;
 } WallpapersInfo;
 
-DLLAPI bool system_wallpaper(WallpapersInfo *& info);
-// DLLAPI WallpapersInfo *system_wallpaper(WallpapersInfo *info);
+DLLAPI bool system_wallpaper_info(WallpapersInfo *&info);
+DLLAPI void lwpstrToString(LPWSTR lwpstr, char *&buffer);
+// DLLAPI WallpapersInfo *system_wallpaper_info(WallpapersInfo *info);
 #endif

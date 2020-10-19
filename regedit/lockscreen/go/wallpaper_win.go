@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"image/color"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 
@@ -183,23 +184,45 @@ type WallpaperInfo struct {
 }
 
 func (w WallpaperInfo) String() string {
-	bytes, err := json.Marshal(w)
+	argsWithoutProg := os.Args[1:]
+	delimiter := ""
+	if len(argsWithoutProg) == 0 {
+		// delimiter = ""
+		// log.Println("Can specify am optional delimiter to format json")
+	} else {
+		delimiter = argsWithoutProg[0]
+	}
+	unescapedDelimiter, err := strconv.Unquote(`"` + delimiter + `"`)
+	if err != nil {
+		log.Println(err)
+	}
+	// log.Println("unescaped", s, len(s))
+
+	var bytes []byte
+	if delimiter != "" {
+		bytes, err = json.MarshalIndent(w, "", unescapedDelimiter)
+	} else {
+		bytes, err = json.Marshal(w)
+	}
+
 	if err != nil {
 		// https://stackoverflow.com/q/64306027/8608146
 		type WallpaperInfoDup WallpaperInfo
 		return fmt.Sprintf("%+v\n", WallpaperInfoDup(w))
 	}
-	return string(bytes)
+	bytestr := string(bytes)
+	// log.Println("bytestr len", len(bytestr))
+	return bytestr
 }
 
-// func main() {
-// 	log.SetFlags(0)
-// 	// log.SetFlags(log.LstdFlags | log.Lshortfile)
+func main() {
+	log.SetFlags(0)
+	// log.SetFlags(log.LstdFlags | log.Lshortfile)
 
-// 	winfo := GetWallpaperInfo()
-// 	// https://stackoverflow.com/a/24512194/8608146
-// 	log.Println(winfo)
-// }
+	winfo := GetWallpaperInfo()
+	// https://stackoverflow.com/a/24512194/8608146
+	log.Println(winfo)
+}
 
 // GetWallpaperInfo returns the Wallpaper info
 func GetWallpaperInfo() WallpaperInfo {
@@ -228,7 +251,8 @@ func GetWallpaperInfo() WallpaperInfo {
 		}
 
 	} else {
-		log.Println(wallpaper)
+		winfo.HelpMsg = "Wallpaper is an image"
+		winfo.Path = wallpaper
 	}
 
 	if wallpaper == "" && data == "" {

@@ -1,4 +1,4 @@
-module github.com/phanirithvij/experiments/go-exps
+module github.com/phanirithvij/experiments/goexps
 
 go 1.15
 
@@ -11,7 +11,7 @@ require (
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/spf13/afero v1.4.1 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
-	github.com/spf13/cobra v1.1.1 // indirect
+	github.com/spf13/cobra v1.1.1
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.7.1 // indirect
 	golang.org/x/image v0.0.0-20200927104501-e162460cd6b5 // indirect

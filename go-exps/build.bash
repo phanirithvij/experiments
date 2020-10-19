@@ -1,7 +1,12 @@
+echo "[build] removing previously built dist dir (if exists)"
+
+rm -rf dist/
+
 echo "[build] go-bindata embedding assets"
 go generate
 
 PKG_ROOT="github.com/phanirithvij/experiments/go-exps"
+CONFIG_FILE="$PKG_ROOT/experiments/config"
 GIT_COMMIT=$(git rev-list -1 HEAD)
 DATE=$(date -R)
 VERSION="0.0.1"
@@ -9,7 +14,7 @@ NAME="go-exps"
 
 DIST_DIR="dist"
 
-PLATFORMS=("windows/amd64" "windows/386" "darwin/amd64" "linux/amd64")
+PLATFORMS=("windows/amd64" "windows/386" "darwin/amd64" "linux/amd64" "linux/386")
 
 package_split=(${PKG_ROOT//\// })
 package_name=${package_split[-1]}
@@ -21,7 +26,7 @@ do
     GOOS=${platform_split[0]}
     GOARCH=${platform_split[1]}
 
-    BIN=$package_name'_'$GOOS'_'$GOARCH'_'$VERSION
+    BIN=$package_name'_'$GOOS'_'$GOARCH
     DESTDIR=$DIST_DIR/$VERSION
     BIN="$DESTDIR/$BIN"
 
@@ -39,7 +44,14 @@ do
     echo "[build] OS: $GOOS"
     echo "[build] ARCH: $GOARCH"
 
-    LDFLAGS="-X '$PKG_ROOT/config.Version=$VERSION' -X '$PKG_ROOT/config.BuildTime=$DATE' -X '$PKG_ROOT/config.CommitID=$GIT_COMMIT'"
+    VERSIONFLAG="-X '$CONFIG_FILE.Version=$VERSION'"
+    COMMITFLAG="-X '$CONFIG_FILE.CommitID=$GIT_COMMIT'"
+    BUILDFLAG="-X '$CONFIG_FILE.BuildTime=$DATE'"
+    ARCHFLAG="-X '$CONFIG_FILE.Architecture=$GOARCH'"
+    OSFLAG="-X '$CONFIG_FILE.Platform=$GOOS'"
+
+    LDFLAGS="$VERSIONFLAG $BUILDFLAG $COMMITFLAG $ARCHFLAG $OSFLAG"
+
     env GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "$LDFLAGS" -o $BIN $PKG_ROOT
 
     if [ $? -ne 0 ]; then
@@ -48,7 +60,7 @@ do
     fi
 
     echo "[build] UPX compressing $BIN"
-    upx --fast -v $BIN
+    upx --lzma -v $BIN
     # upx --brute -v $BIN
     echo "[build] UPX testing $BIN"
     upx -t -v $BIN

@@ -15,16 +15,16 @@ import (
 	"golang.org/x/sys/windows/registry"
 )
 
-// func main() {
-// 	log.SetFlags(0)
-// 	// log.SetFlags(log.LstdFlags | log.Lshortfile)
-// 	d, err := getLockScreenPath()
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	log.Println(d)
-// 	// fmt.Println(d)
-// }
+func main() {
+	// log.SetFlags(0)
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	d, err := getLockScreenPath()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(d)
+	// fmt.Println(d)
+}
 
 func getSysLockScreenConfig() {
 	// sid, err := getUserSID()
@@ -39,8 +39,8 @@ func getSysLockScreenConfig() {
 	// S-1-5-21-1131672954-3644571216-278812857-1001\SOFTWARE\Microsoft\Windows\CurrentVersion\Lock Screen
 	ret := `SOFTWARE\Microsoft\Windows\CurrentVersion\Lock Screen`
 	// ret := sid + `\SOFTWARE\Microsoft\Windows\CurrentVersion\Lock Screen`
-	key, err := registry.OpenKey(registry.CURRENT_USER, ret, registry.READ)
-	// key, err := registry.OpenKey(registry.USERS, ret, registry.READ)
+	key, err := registry.OpenKey(registry.CURRENT_USER, ret, registry.READ|registry.WOW64_64KEY)
+	// key, err := registry.OpenKey(registry.USERS, ret, registry.READ|registry.WOW64_64KEY)
 	defer key.Close()
 	if err != nil {
 		log.Fatal(err)
@@ -106,7 +106,7 @@ func getLockScreenRegKeySpotLight() (string, error) {
 		return "", err
 	}
 	ret := `SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Creative\` + sid
-	key, err := registry.OpenKey(registry.LOCAL_MACHINE, ret, registry.READ)
+	key, err := registry.OpenKey(registry.LOCAL_MACHINE, ret, registry.READ|registry.WOW64_64KEY)
 	defer key.Close()
 	if err != nil {
 		log.Fatal(err)
@@ -139,7 +139,7 @@ func getLockScreenPath() (string, error) {
 			// not windows spotlight could be one of picture/slideshow
 			log.Println("Not windows spotlight")
 			ret := `SOFTWARE\Microsoft\Windows\CurrentVersion\Lock Screen`
-			key, err := registry.OpenKey(registry.CURRENT_USER, ret, registry.READ)
+			key, err := registry.OpenKey(registry.CURRENT_USER, ret, registry.READ|registry.WOW64_64KEY)
 			slideshowEnabled, _, err := key.GetIntegerValue("SlideshowEnabled")
 			if err != nil {
 				log.Println(err)
@@ -150,7 +150,7 @@ func getLockScreenPath() (string, error) {
 				// This is close to impossible as I have non lead
 				log.Println("Slide show")
 				ret = `SOFTWARE\Microsoft\Windows\CurrentVersion\Lock Screen`
-				key, err := registry.OpenKey(registry.CURRENT_USER, ret, registry.READ)
+				key, err := registry.OpenKey(registry.CURRENT_USER, ret, registry.READ|registry.WOW64_64KEY)
 				spath, _, err := key.GetStringValue("SlideshowDirectoryPath1")
 				if err != nil {
 					if err == registry.ErrNotExist {
@@ -169,7 +169,7 @@ func getLockScreenPath() (string, error) {
 				// printing as a string shows some kind of pattern can try
 				ret = `SOFTWARE\Microsoft\Windows\CurrentVersion\SystemProtectedUserData\` + sid + `\AnyoneRead\LockScreen`
 				log.Println("Picture")
-				key, err := registry.OpenKey(registry.LOCAL_MACHINE, ret, registry.READ)
+				key, err := registry.OpenKey(registry.LOCAL_MACHINE, ret, registry.READ|registry.WOW64_64KEY)
 				s, _, err := key.GetStringValue("")
 				if err != nil {
 					log.Println(err)
@@ -221,7 +221,7 @@ func getLockScreenPath() (string, error) {
 	}
 	// Spotlight
 	log.Println("Spotlight")
-	key, err := registry.OpenKey(registry.LOCAL_MACHINE, lockScreenRegKey, registry.READ)
+	key, err := registry.OpenKey(registry.LOCAL_MACHINE, lockScreenRegKey, registry.READ|registry.WOW64_64KEY)
 	defer key.Close()
 	if err != nil {
 		log.Fatal(err)

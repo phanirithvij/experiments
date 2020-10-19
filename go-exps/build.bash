@@ -7,8 +7,7 @@ DATE=$(date -R)
 VERSION="0.0.1"
 NAME="go-exps"
 
-BINDIR="dist"
-mkdir -p $BINDIR
+DIST_DIR="dist"
 
 PLATFORMS=("windows/amd64" "windows/386" "darwin/amd64" "linux/amd64")
 
@@ -23,7 +22,10 @@ do
     GOARCH=${platform_split[1]}
 
     BIN=$package_name'_'$GOOS'_'$GOARCH'_'$VERSION
-    BIN="$BINDIR/$BIN"
+    DESTDIR=$DIST_DIR/$VERSION
+    BIN="$DESTDIR/$BIN"
+
+    mkdir -p $DESTDIR
 
     if [[ $GOOS == "windows" ]]
     then
@@ -46,9 +48,10 @@ do
     fi
 
     echo "[build] UPX compressing $BIN"
-    upx --brute -v $BIN
+    upx --fast -v $BIN
+    # upx --brute -v $BIN
     echo "[build] UPX testing $BIN"
     upx -t -v $BIN
-    echo -e "[build] file info\n\n"
+    echo -e "[build] file info\n"
     file $BIN
 done

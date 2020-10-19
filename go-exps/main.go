@@ -6,6 +6,7 @@ import (
 	_ "image/png"
 	"log"
 
+	"github.com/RobCherry/vibrant"
 	"github.com/phanirithvij/experiments/go-exps/config"
 )
 
@@ -24,19 +25,19 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	_, _, err = image.Decode(bytes.NewReader(data))
-	// decodedImage, _, _ := image.Decode(bytes.NewReader(data))
+	// _, _, err = image.Decode(bytes.NewReader(data))
+	decodedImage, _, err := image.Decode(bytes.NewReader(data))
 	if err != nil {
 		log.Fatalln(err)
 	}
-	// palette := vibrant.NewPaletteBuilder(decodedImage).Generate()
+	palette := vibrant.NewPaletteBuilder(decodedImage).Generate()
 	// Iterate over the swatches in the palette...
 	// for _, swatch := range palette.Swatches() {
-	// 	// log.Printf("Swatch has color %v and population %d\n", swatch.RGBAInt(), swatch.Population())
+	// 	log.Printf("Swatch has color %v and population %d\n", swatch.RGBAInt(), swatch.Population())
 	// }
-	// for _, target := range palette.Targets() {
-	// 	// pall := palette.SwatchForTarget(target)
-	// 	// log.Println(target)
-	// 	// Do something with the swatch for a given target...
-	// }
+	for _, target := range palette.Targets() {
+		// pall := palette.SwatchForTarget(target)
+		log.Println(target)
+		// Do something with the swatch for a given target...
+	}
 }

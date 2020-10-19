@@ -11,7 +11,7 @@ exe rm -rf dist/
 echo "[build] go-bindata embedding assets"
 exe go generate
 
-PKG_ROOT="github.com/phanirithvij/experiments/go-exps"
+PKG_ROOT="github.com/phanirithvij/experiments/goexps"
 CONFIG_FILE="$PKG_ROOT/experiments/config"
 GIT_COMMIT=$(git rev-list -1 HEAD)
 # Must use -R to convert it inside go as a time.Time

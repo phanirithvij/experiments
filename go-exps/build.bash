@@ -10,7 +10,11 @@ NAME="go-exps"
 BINDIR="dist"
 mkdir -p $BINDIR
 
-PLATFORMS=("windows/amd64" "windows/386" "darwin/amd64", "linux/amd64")
+PLATFORMS=("windows/amd64" "windows/386" "darwin/amd64" "linux/amd64")
+
+package_split=(${PKG_ROOT//\// })
+package_name=${package_split[-1]}
+
 
 for platform in "${PLATFORMS[@]}"
 do
@@ -18,7 +22,7 @@ do
     GOOS=${platform_split[0]}
     GOARCH=${platform_split[1]}
 
-    BIN=$PKG_ROOT'-'$GOOS'-'$GOARCH'-'$VERSION
+    BIN=$package_name'_'$GOOS'_'$GOARCH'_'$VERSION
     BIN="$BINDIR/$BIN"
 
     if [[ $GOOS == "windows" ]]
@@ -30,8 +34,21 @@ do
     echo "[build] Commit $GIT_COMMIT"
     echo "[build] BuildTime $DATE"
     echo "[build] Building to $BIN"
+    echo "[build] OS: $GOOS"
+    echo "[build] ARCH: $GOARCH"
 
-    go build -ldflags "-X '$PKG_ROOT/config.Version=$VERSION' -X '$PKG_ROOT/config.BuildTime=$DATE' -X '$PKG_ROOT/config.CommitID=$GIT_COMMIT'" -o $BIN
-    file $BIN
+    LDFLAGS="-X '$PKG_ROOT/config.Version=$VERSION' -X '$PKG_ROOT/config.BuildTime=$DATE' -X '$PKG_ROOT/config.CommitID=$GIT_COMMIT'"
+    env GOOS=$GOOS GOARCH=$GOARCH go build -ldflags "$LDFLAGS" -o $BIN $PKG_ROOT
+
+    if [ $? -ne 0 ]; then
+        echo 'An error has occurred! Aborting the script execution...'
+        exit 1
+    fi
+
+    echo "[build] UPX compressing $BIN"
     upx --brute -v $BIN
+    echo "[build] UPX testing $BIN"
+    upx -t -v $BIN
+    echo -e "[build] file info\n\n"
+    file $BIN
 done
